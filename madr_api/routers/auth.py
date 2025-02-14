@@ -34,7 +34,7 @@ def login_for_access_token(
             detail='Incorrect email or password',
         )
 
-    access_token = create_access_token(data={'sub': account.username})
+    access_token = create_access_token(data={'sub': account.email})
 
     return {'access_token': access_token, 'token_type': 'bearer'}
 
@@ -44,5 +44,5 @@ def get_refresh_token(
     session: Session = Depends(get_session),
     current_account: UserAccount = Depends(get_current_user_account),
 ):
-    access_token = create_access_token(data={'sub': current_account.username})
+    access_token = create_access_token(data={'sub': current_account.email})
     return {'access_token': access_token, 'token_type': 'bearer'}
