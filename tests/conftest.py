@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 from madr_api.app import app
 from madr_api.database import get_session
 from madr_api.models import UserAccount, table_registry
+from madr_api.security import get_password_hash
 
 
 @pytest.fixture
@@ -63,11 +64,16 @@ def mock_db_time():
 
 @pytest.fixture
 def account(session):
+    password = 'test'
     account = UserAccount(
-        username='Test', email='test@test.com', password='test'
+        username='Test',
+        email='test@test.com',
+        password=get_password_hash(password),
     )
     session.add(account)
     session.commit()
     session.refresh(account)
+
+    account.clean_password = password
 
     return account

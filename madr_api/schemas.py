@@ -24,3 +24,8 @@ class UserAccountList(BaseModel):
 class FilterPage(BaseModel):
     offset: int = 0
     limit: int = 100
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str

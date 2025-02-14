@@ -14,6 +14,7 @@ from madr_api.schemas import (
     UserAccountPublic,
     UserAccountSchema,
 )
+from madr_api.security import get_password_hash
 
 router = APIRouter(prefix='/accounts', tags=['accounts'])
 
@@ -51,7 +52,7 @@ def create_accout(
     db_account = UserAccount(
         username=account.username,
         email=account.email,
-        password=account.password,
+        password=get_password_hash(account.password),
     )
     session.add(db_account)
     session.commit()
@@ -82,7 +83,7 @@ def update_account(
     try:
         db_account.username = account.username
         db_account.email = account.email
-        db_account.password = account.password
+        db_account.password = get_password_hash(account.password)
         session.commit()
         session.refresh(db_account)
 
