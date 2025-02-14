@@ -46,7 +46,7 @@ def create_accout(
     if db_account:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail='Username or email already exists.',
+            detail='Username or email already exists',
         )
 
     db_account = UserAccount(

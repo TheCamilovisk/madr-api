@@ -34,6 +34,34 @@ def test_create_account_ok(client):
     }
 
 
+def test_create_account_username_exists_error(client, account):
+    response = client.post(
+        '/accounts/',
+        json={
+            'username': account.username,
+            'email': 'test@test.com',
+            'password': 'test',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username or email already exists'}
+
+
+def test_create_account_email_exists_error(client, account):
+    response = client.post(
+        '/accounts/',
+        json={
+            'username': 'test',
+            'email': account.email,
+            'password': 'test',
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Username or email already exists'}
+
+
 def test_update_account_ok(client, account):
     response = client.put(
         f'/accounts/{account.id}',
