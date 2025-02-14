@@ -14,7 +14,7 @@ from madr_api.schemas import (
     UserAccountPublic,
     UserAccountSchema,
 )
-from madr_api.security import get_password_hash
+from madr_api.security import get_current_user_account, get_password_hash
 
 router = APIRouter(prefix='/accounts', tags=['accounts'])
 
@@ -70,27 +70,23 @@ def update_account(
     account_id: int,
     account: UserAccountSchema,
     session: Session = Depends(get_session),
+    current_account: UserAccount = Depends(get_current_user_account),
 ):
-    db_account = session.scalar(
-        select(UserAccount).where(UserAccount.id == account_id)
-    )
-
-    if not db_account:
+    if account_id != current_account.id:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='User not found'
+            status_code=HTTPStatus.FORBIDDEN, detail='Not enough permissions'
         )
-
     try:
-        db_account.username = account.username
-        db_account.email = account.email
-        db_account.password = get_password_hash(account.password)
+        current_account.username = account.username
+        current_account.email = account.email
+        current_account.password = get_password_hash(account.password)
         session.commit()
-        session.refresh(db_account)
+        session.refresh(current_account)
 
-        return db_account
+        return current_account
     except IntegrityError:
         raise HTTPException(
-            status_code=HTTPStatus.CONFLICT,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail='Username or email already exists',
         )
 
@@ -98,16 +94,16 @@ def update_account(
 @router.delete(
     '/{account_id}', status_code=HTTPStatus.OK, response_model=Message
 )
-def delete_account(account_id: int, session: Session = Depends(get_session)):
-    db_account = session.scalar(
-        select(UserAccount).where(UserAccount.id == account_id)
-    )
-    if not db_account:
+def delete_account(
+    account_id: int,
+    session: Session = Depends(get_session),
+    current_account: UserAccount = Depends(get_current_user_account),
+):
+    if current_account.id != account_id:
         raise HTTPException(
-            status_code=HTTPStatus.NOT_FOUND, detail='Account not found'
+            status_code=HTTPStatus.FORBIDDEN, detail='Not enough permissions'
         )
-
-    session.delete(db_account)
+    session.delete(current_account)
     session.commit()
 
     return {'message': 'Account deleted'}

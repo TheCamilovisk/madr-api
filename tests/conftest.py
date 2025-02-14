@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from datetime import datetime
 
+import factory
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import StaticPool, create_engine, event
@@ -62,14 +63,20 @@ def mock_db_time():
     return _mock_db_time
 
 
+class AccountFactory(factory.Factory):
+    class Meta:
+        model = UserAccount
+
+    username = factory.Sequence(lambda n: f'test{n}')
+    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
+    password = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')
+
+
 @pytest.fixture
 def account(session):
-    password = 'test'
-    account = UserAccount(
-        username='Test',
-        email='test@test.com',
-        password=get_password_hash(password),
-    )
+    password = 'testtest'
+    account = AccountFactory(password=get_password_hash(password))
+
     session.add(account)
     session.commit()
     session.refresh(account)
@@ -77,3 +84,26 @@ def account(session):
     account.clean_password = password
 
     return account
+
+
+@pytest.fixture
+def another_account(session):
+    password = 'testtest'
+    account = AccountFactory(password=get_password_hash(password))
+
+    session.add(account)
+    session.commit()
+    session.refresh(account)
+
+    account.clean_password = password
+
+    return account
+
+
+@pytest.fixture
+def token(client, account):
+    response = client.post(
+        '/auth/token',
+        data={'username': account.email, 'password': account.clean_password},
+    )
+    return response.json()['access_token']
