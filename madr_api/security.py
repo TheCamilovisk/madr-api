@@ -52,8 +52,8 @@ def get_current_user_account(
 
     try:
         payload = decode(token, settings.SECRET_KEY, settings.ALGORITHM)
-        subject_email = payload.get('sub')
-        if not subject_email:
+        subject_username = payload.get('sub')
+        if not subject_username:
             raise credentials_exception
     except DecodeError:
         raise credentials_exception
@@ -61,7 +61,7 @@ def get_current_user_account(
         raise credentials_exception
 
     account = session.scalar(
-        select(UserAccount).where(UserAccount.email == subject_email)
+        select(UserAccount).where(UserAccount.username == subject_username)
     )
     if not account:
         raise credentials_exception

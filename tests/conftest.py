@@ -104,6 +104,9 @@ def another_account(session):
 def token(client, account):
     response = client.post(
         '/auth/token',
-        data={'username': account.email, 'password': account.clean_password},
+        data={
+            'username': account.username,
+            'password': account.clean_password,
+        },
     )
     return response.json()['access_token']
