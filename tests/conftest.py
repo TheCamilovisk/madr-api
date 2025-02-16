@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from madr_api.app import app
 from madr_api.database import get_session
-from madr_api.models import UserAccount, table_registry
+from madr_api.models import Author, UserAccount, table_registry
 from madr_api.security import get_password_hash
 
 
@@ -110,3 +110,43 @@ def token(client, account):
         },
     )
     return response.json()['access_token']
+
+
+class AuthorFactory(factory.Factory):
+    class Meta:
+        model = Author
+
+    name = factory.Sequence(lambda n: f'author{n}')
+
+
+@pytest.fixture
+def author(session):
+    author = AuthorFactory()
+
+    session.add(author)
+    session.commit()
+    session.refresh(author)
+
+    return author
+
+
+@pytest.fixture
+def another_author(session):
+    author = AuthorFactory()
+
+    session.add(author)
+    session.commit()
+    session.refresh(author)
+
+    return author
+
+
+@pytest.fixture
+def one_more_author(session):
+    author = AuthorFactory(name='special')
+
+    session.add(author)
+    session.commit()
+    session.refresh(author)
+
+    return author

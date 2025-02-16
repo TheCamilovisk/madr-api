@@ -29,3 +29,20 @@ class FilterPage(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class AuthorSchema(BaseModel):
+    name: str
+
+
+class AuthorPublic(BaseModel):
+    id: int
+    name: str
+
+
+class AuthorList(BaseModel):
+    authors: list[AuthorPublic]
+
+
+class AuthorsFilterPage(FilterPage):
+    name: str = ''
