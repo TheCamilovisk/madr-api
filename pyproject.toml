@@ -14,6 +14,7 @@ alembic = "^1.14.1"
 pyjwt = "^2.10.1"
 tzdata = "^2025.1"
 pwdlib = {extras = ["argon2"], version = "^0.2.1"}
+psycopg = {extras = ["binary"], version = "^3.2.4"}
 
 
 [tool.poetry.group.dev.dependencies]
