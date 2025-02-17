@@ -29,7 +29,7 @@ def test_create_author_name_exists_error(client, token, author):
         json={'name': author.name},
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Author name already exists'}
 
 
@@ -88,7 +88,7 @@ def test_update_author_name_exists_error(
         json={'name': another_author.name},
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Author name already exists'}
 
 

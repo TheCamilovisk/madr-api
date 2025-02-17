@@ -52,7 +52,7 @@ def test_create_account_username_exists_error(client, account):
         },
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Username or email already exists'}
 
 
@@ -68,7 +68,7 @@ def test_create_account_email_exists_error(client, account):
         },
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Username or email already exists'}
 
 
@@ -147,7 +147,7 @@ def test_update_account_username_already_exists_error(
         },
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Username or email already exists'}
 
 
@@ -166,7 +166,7 @@ def test_update_account_email_already_exists_error(
         },
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Username or email already exists'}
 
 

@@ -37,7 +37,7 @@ def create_author(
         return db_author
     except IntegrityError:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail='Author name already exists',
         )
 
@@ -88,7 +88,7 @@ def update_author(
         return db_author
     except IntegrityError:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail='Author name already exists',
         )
 

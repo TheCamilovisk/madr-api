@@ -45,7 +45,7 @@ def create_accout(
 
     if db_account:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail='Username or email already exists',
         )
 
@@ -86,7 +86,7 @@ def update_account(
         return current_account
     except IntegrityError:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail='Username or email already exists',
         )
 

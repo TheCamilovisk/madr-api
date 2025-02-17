@@ -55,8 +55,28 @@ def test_create_book_title_already_exists(session, client, token, author):
         },
     )
 
-    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.status_code == HTTPStatus.CONFLICT
     assert response.json() == {'detail': 'Book title already exists'}
+
+
+def test_create_book_author_not_found_error(session, client, token):
+    test_book = BookFactory(title='test title', author_id=1)
+
+    session.add(test_book)
+    session.commit()
+
+    response = client.post(
+        '/books',
+        headers={'Authorization': f'Bearer {token}'},
+        json={
+            'title': test_book.title,
+            'year': test_book.year,
+            'author_id': test_book.author_id,
+        },
+    )
+
+    assert response.status_code == HTTPStatus.BAD_REQUEST
+    assert response.json() == {'detail': 'Author not found'}
 
 
 def test_delete_book_ok(client, token, book):

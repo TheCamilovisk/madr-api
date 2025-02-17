@@ -27,6 +27,14 @@ def create_book(
     session: Session = Depends(get_session),
     current_account: UserAccount = Depends(get_current_user_account),
 ):
+    db_author = session.scalar(
+        select(Author).where(Author.id == new_book.author_id)
+    )
+    if not db_author:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail='Author not found'
+        )
+
     new_title = sanitize_string(new_book.title)
     db_book = Book(
         title=new_title, year=new_book.year, author_id=new_book.author_id
@@ -40,7 +48,7 @@ def create_book(
         return db_book
     except IntegrityError:
         raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST,
+            status_code=HTTPStatus.CONFLICT,
             detail='Book title already exists',
         )
 
