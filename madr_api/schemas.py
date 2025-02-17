@@ -46,3 +46,28 @@ class AuthorList(BaseModel):
 
 class AuthorsFilterPage(FilterPage):
     name: str = ''
+
+
+class BookSchema(BaseModel):
+    title: str
+    year: int
+    author_id: int
+
+
+class BookPublic(BookSchema):
+    id: int
+
+
+class BookUpdate(BaseModel):
+    title: str | None = None
+    year: int | None = None
+    author_id: int | None = None
+
+
+class BookList(BaseModel):
+    books: list[BookPublic]
+
+
+class BooksFilterPage(FilterPage):
+    title: str | None = None
+    year: int | None = None

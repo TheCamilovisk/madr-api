@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from madr_api.app import app
 from madr_api.database import get_session
-from madr_api.models import Author, UserAccount, table_registry
+from madr_api.models import Author, Book, UserAccount, table_registry
 from madr_api.security import get_password_hash
 
 
@@ -150,3 +150,46 @@ def one_more_author(session):
     session.refresh(author)
 
     return author
+
+
+class BookFactory(factory.Factory):
+    class Meta:
+        model = Book
+
+    title = factory.Sequence(lambda n: f'title{n}')
+    year = 1999
+    author_id = 1
+
+    # Here we're using factory.PostGeneration to set the created_at and
+    # updated_at fields after the instance is created. This avoids passing them
+    # as arguments to the constructor.
+    # In this approach:
+    #   - The set_timestamps method is a post-generation hook that sets the
+    #     created_at and updated_at fields after the instance is created.
+    #   - The create parameter ensures that the hook only runs when the
+    #     instance is actually created (not when building or stubbing).
+    @factory.post_generation
+    def set_timestamps(self, create, extracted, **kwargs):
+        if create:
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+
+
+@pytest.fixture
+def book(session, author):
+    book = BookFactory(author_id=author.id)
+
+    session.add(book)
+    session.commit()
+
+    return book
+
+
+@pytest.fixture
+def another_book(session, author):
+    book = BookFactory(author_id=author.id)
+
+    session.add(book)
+    session.commit()
+
+    return book
